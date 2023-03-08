@@ -1,7 +1,6 @@
 package com.retailer.product.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -45,12 +45,8 @@ public class ProductController {
 	 */
 	@GetMapping(path = "/{id}")
 	public ProductDTO getProduct(@PathVariable(name = "id") Integer productId) {
-		Optional<ProductDTO> optProduct = productService.getProductById(productId);
-		if (!optProduct.isPresent()) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
-		}
-
-		return optProduct.get();
+		return productService.getProductById(productId)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
 	}
 
 	/**
@@ -60,13 +56,10 @@ public class ProductController {
 	 * @return The created product
 	 */
 	@PostMapping(path = "")
+	@ResponseStatus(HttpStatus.CREATED)
 	public ProductDTO createProduct(@RequestBody RequestedProduct requestedProduct) {
-		Optional<ProductDTO> optProduct = productService.createProduct(requestedProduct);
-		if (!optProduct.isPresent()) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Fail to create product");
-		}
-
-		return optProduct.get();
+		return productService.createProduct(requestedProduct)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Fail to create product"));
 	}
 
 	/**
@@ -79,12 +72,8 @@ public class ProductController {
 	@PutMapping(path = "/{id}")
 	public ProductDTO updateProduct(@PathVariable(name = "id") Integer productId,
 			@RequestBody RequestedProduct requestedProduct) {
-		Optional<ProductDTO> optProduct = productService.updateProduct(productId, requestedProduct);
-		if (!optProduct.isPresent()) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
-		}
-
-		return optProduct.get();
+		return productService.updateProduct(productId, requestedProduct)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
 	}
 
 	/**
